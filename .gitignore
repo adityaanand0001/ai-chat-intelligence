@@ -1,0 +1,8 @@
+node_modules
+.next
+__pycache__
+*.pyc
+.env
+CLAUDE.md
+AGENTS.md
+.vscode
