@@ -97,7 +97,7 @@ export default function HomePage() {
 
         <motion.p
           variants={itemVariants}
-          className="text-[12px] text-neutral-400 text-center mt-4 select-none"
+          className="text-[12px] text-neutral-400 text-center mt-10 select-none"
         >
           Chatbot can make mistakes. Verify important information.
         </motion.p>
