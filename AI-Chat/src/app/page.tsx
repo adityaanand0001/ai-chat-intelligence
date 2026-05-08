@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useChat } from "@/context/ChatContext";
@@ -37,7 +38,10 @@ export default function HomePage() {
   const router = useRouter();
   const { createSession, sendMessage, isLoading } = useChat();
 
+  const [isNavigating, setIsNavigating] = useState(false);
+
   const handleSend = async (text: string) => {
+    setIsNavigating(true);
     const sid = await createSession();
     sendMessage(text, sid);
     router.push(`/chat?session=${sid}`);
@@ -74,8 +78,21 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="w-full">
-          <InputBox onSend={handleSend} disabled={isLoading} />
+        <motion.div variants={itemVariants} className="w-full h-[56px] flex items-center justify-center">
+          {isNavigating ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-3 text-[#E07B39]"
+            >
+              <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              <span className="text-[14px] font-medium tracking-tight">Starting conversation...</span>
+            </motion.div>
+          ) : (
+            <div className="w-full h-full">
+              <InputBox onSend={handleSend} disabled={isLoading || isNavigating} />
+            </div>
+          )}
         </motion.div>
 
         <motion.p

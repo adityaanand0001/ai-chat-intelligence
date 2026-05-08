@@ -26,4 +26,9 @@ async def stream_gemini(message: str, history: list, api_key: str | None = None)
     response = await chat.send_message_async(message, stream=True)
     async for chunk in response:
         if chunk.text:
-            yield f"data: {json.dumps({'token': chunk.text})}\n\n"
+            text = chunk.text
+            chunk_size = 3
+            for i in range(0, len(text), chunk_size):
+                sub_chunk = text[i:i+chunk_size]
+                yield f"data: {json.dumps({'token': sub_chunk})}\n\n"
+                await asyncio.sleep(0.015)
