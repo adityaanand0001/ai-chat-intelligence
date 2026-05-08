@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InputBoxProps {
   onSend: (message: string) => void;
@@ -49,12 +49,16 @@ export default function InputBox({ onSend, disabled }: InputBoxProps) {
 
   return (
     <div className="w-full">
-      <div
-        className={`relative flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-all duration-300 ${
-          isFocused
-            ? "border-[#E07B39]/30 bg-white shadow-[0_2px_24px_rgba(0,0,0,0.04)]"
-            : "border-[#E5E5E5] shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
-        }`}
+      <motion.div
+        animate={{
+          borderColor: isFocused ? "rgba(224, 123, 57, 0.3)" : "rgba(229, 229, 229, 1)",
+          boxShadow: isFocused 
+            ? "0 4px 32px rgba(224, 123, 57, 0.08)" 
+            : "0 1px 3px rgba(0, 0, 0, 0.02)",
+        }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onClick={() => textareaRef.current?.focus()}
+        className="relative flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm custom-cursor-text"
       >
         <textarea
           ref={textareaRef}
@@ -66,25 +70,30 @@ export default function InputBox({ onSend, disabled }: InputBoxProps) {
           disabled={disabled}
           placeholder="Ask anything..."
           rows={1}
-          className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-[15px] resize-none px-4 pt-4 pb-14 font-normal leading-[1.6] text-[#111111] placeholder:text-neutral-400 cursor-text"
+          className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-[15px] resize-none px-4 pt-4 pb-14 font-normal leading-[1.6] text-[#111111] placeholder:text-neutral-400 custom-cursor-text"
           style={{ minHeight: "56px" }}
         />
 
         <div className="absolute bottom-3 right-3 flex items-center gap-2">
-          <motion.button
-            onClick={handleSubmit}
-            disabled={!hasText || disabled}
-            whileTap={hasText ? { scale: 0.9 } : undefined}
-            className={`flex items-center justify-center w-[36px] h-[36px] rounded-xl transition-all duration-200 cursor-pointer ${
-              hasText
-                ? "bg-[#E07B39] text-white hover:bg-[#C96A2E] shadow-sm"
-                : "bg-neutral-100 text-neutral-400"
-            }`}
-          >
-            <ArrowUp className="w-[18px] h-[18px]" strokeWidth={2} />
-          </motion.button>
+          <AnimatePresence>
+            {hasText && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0.8, rotate: 45 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                onClick={handleSubmit}
+                disabled={disabled}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex items-center justify-center w-[36px] h-[36px] rounded-xl cursor-pointer bg-[#E07B39] text-white shadow-sm"
+              >
+                <ArrowUp className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
