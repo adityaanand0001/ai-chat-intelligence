@@ -11,7 +11,7 @@ interface Insight {
 }
 
 interface Message {
-  id: number;
+  id: string | number;
   role: "user" | "assistant";
   content: string;
   insight?: Insight;
@@ -30,6 +30,7 @@ function TypingIndicator() {
         <motion.div
           key={i}
           className="w-1.5 h-1.5 rounded-full bg-[#E07B39]"
+          initial={{ y: 0 }}
           animate={{ y: [0, -4, 0] }}
           transition={{
             duration: 0.6,
@@ -119,7 +120,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
         className="flex-1 overflow-y-auto no-scrollbar scroll-smooth"
       >
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-8 w-full">
-          <AnimatePresence initial={false}>
+          <AnimatePresence>
             {messages.map((msg, i) => {
               const isUser = msg.role === "user";
               const prev = i > 0 ? messages[i - 1] : null;
