@@ -127,9 +127,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
                 <motion.div
                   key={msg.id}
                   layout="position"
-                  initial={{ opacity: 0, scale: 0.96, y: 15, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ type: "spring", stiffness: 400, damping: 28, mass: 0.8 }}
                   className={`w-full flex flex-col ${isUser ? "items-end" : "items-start"} ${isNewExchange ? "mt-8" : "mt-3"}`}
                 >
                 {isUser ? (

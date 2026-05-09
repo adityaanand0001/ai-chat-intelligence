@@ -67,16 +67,24 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, [refreshSessions]);
 
   const loadSession = useCallback(async (id: string) => {
-    const msgs = await api(`/sessions/${id}/messages`);
-    setSessionId(id);
-    setMessages(
-      msgs.map((m: any) => ({
-        id: m.id,
-        role: m.role as "user" | "assistant",
-        content: m.content,
-        insight: m.intent ? { intent: m.intent, sentiment: m.sentiment || "neutral" } : undefined,
-      }))
-    );
+    setIsLoading(true);
+    setMessages([]);
+    try {
+      const msgs = await api(`/sessions/${id}/messages`);
+      setSessionId(id);
+      setMessages(
+        msgs.map((m: any) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          content: m.content,
+          insight: m.intent ? { intent: m.intent, sentiment: m.sentiment || "neutral" } : undefined,
+        }))
+      );
+    } catch {
+      // Handle error
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const sendMessage = useCallback(async (text: string, sid?: string) => {
