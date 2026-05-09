@@ -30,7 +30,7 @@ export default function Sidebar({ isOpen, onToggle, onNewChat, onSettings }: Sid
   const { sessions, sessionId, loadSession, newChat } = useChat();
   const [isHovered, setIsHovered] = useState(false);
 
-  const expanded = isOpen || isHovered;
+  const expanded = isOpen || (isHovered && typeof window !== "undefined" && window.innerWidth >= 768);
 
   const handleNewChat = () => {
     newChat();
