@@ -7,6 +7,8 @@ import Sidebar from "@/components/Sidebar";
 import SettingsModal from "@/components/SettingsModal";
 import StatusBar from "@/components/StatusBar";
 
+import { Menu, Plus } from "lucide-react";
+
 export function ClientShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -35,6 +37,22 @@ export function ClientShell({ children }: { children: React.ReactNode }) {
           className="flex-1 flex flex-col min-h-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative"
           style={{ marginLeft: isDesktop ? (sidebarOpen ? 260 : 52) : 0 }}
         >
+          <div className="absolute top-3 left-4 z-20 flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md bg-white/60 backdrop-blur-md border border-neutral-200/40 text-neutral-600 shadow-sm"
+              aria-label="Open menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => { router.push("/"); setSidebarOpen(false); }}
+              className="p-2 rounded-md bg-white/60 backdrop-blur-md border border-neutral-200/40 text-neutral-600 shadow-sm"
+              aria-label="New chat"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
           <div className="absolute top-3 right-4 z-20">
             <StatusBar />
           </div>

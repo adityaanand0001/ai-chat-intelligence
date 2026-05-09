@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pin, PinOff, MessageSquare, Settings } from "lucide-react";
+import { Plus, Pin, PinOff, MessageSquare, Settings, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useChat } from "@/context/ChatContext";
 
@@ -35,12 +35,18 @@ export default function Sidebar({ isOpen, onToggle, onNewChat, onSettings }: Sid
   const handleNewChat = () => {
     newChat();
     router.push("/");
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      onToggle();
+    }
   };
 
   const handleSessionClick = (id: string) => {
     if (id === sessionId) return;
     loadSession(id);
     router.push(`/chat?session=${id}`);
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      onToggle();
+    }
   };
 
   return (
@@ -72,13 +78,14 @@ export default function Sidebar({ isOpen, onToggle, onNewChat, onSettings }: Sid
           <button
             onClick={onToggle}
             className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500 flex-shrink-0"
-            title={isOpen ? "Unpin sidebar" : "Pin sidebar"}
+            title={isOpen ? "Close sidebar" : "Pin sidebar"}
           >
-            {isOpen ? (
-              <PinOff className="w-4 h-4" />
-            ) : (
-              <Pin className="w-4 h-4" />
-            )}
+            <div className="md:block hidden">
+              {isOpen ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+            </div>
+            <div className="md:hidden block">
+              <X className="w-4 h-4" />
+            </div>
           </button>
 
           <AnimatePresence>
