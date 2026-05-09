@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 
 from models import ChatRequest, ChatResponse, Insight
 from services.nlp import extract_intent, extract_sentiment, extract_with_gemini
+
 from services.streaming import stream_logic, stream_gemini
 from responses import generate_logic, generate_llm, _llm_available
 from db import add_message, update_message

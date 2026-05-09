@@ -1,4 +1,4 @@
-"""Intent classification and sentiment analysis. Uses Gemini when available."""
+"""Intent classification and sentiment analysis. Uses Gemini exclusively."""
 
 import json
 import re
@@ -6,18 +6,18 @@ from responses import _get_gemini
 
 # ── Gemini Extraction ───────────────────────────────────────────
 
-EXTRACTION_PROMPT = """Classify the user's intent and sentiment for the following message.
-Provide the result as a raw JSON object with "intent" and "sentiment" keys.
+EXTRACTION_PROMPT = """Analyze the user's message and determine its intent and sentiment.
+Provide the result as a strict JSON object with "intent" and "sentiment" keys.
 
 Available Intents: 
-- greeting: Hello, hi, etc.
-- farewell: Goodbye, see ya, etc.
-- complaint: User is unhappy or reporting a bug.
-- request: User wants you to perform an action (code, write, create).
+- greeting: Hello, hi, good morning, etc.
+- farewell: Goodbye, see ya, exit, etc.
+- complaint: User is unhappy, reporting a bug, threatening, or frustrated.
+- request: User wants you to perform an action (code, write, create, fix).
 - thanks: User is expressing gratitude.
-- feedback: User is giving an opinion on something.
-- query: User is asking a general question for information.
-- unknown: Use this if it doesn't fit any category.
+- feedback: User is giving an opinion, suggestion, or disagreeing.
+- query: User is asking a general question, seeking info, or clarification.
+- unknown: Use this only if it absolutely doesn't fit any category.
 
 Available Sentiments: positive, neutral, negative.
 
@@ -27,7 +27,7 @@ JSON Output:"""
 
 
 async def extract_with_gemini(text: str, api_key: str | None = None) -> tuple[str, str] | None:
-    """Use Gemini to extract intent and sentiment. Returns (intent, sentiment) or None."""
+    """Use Gemini to extract intent and sentiment. Returns (intent, sentiment) or None on failure."""
     model = _get_gemini(api_key)
     if model is None:
         return None
@@ -51,23 +51,24 @@ async def extract_with_gemini(text: str, api_key: str | None = None) -> tuple[st
             intent = "unknown"
             
         return intent, sentiment
-    except Exception:
+    except Exception as e:
+        print(f"Gemini NLP extraction failed: {e}")
         return None
 
 
-# ── Intent Keywords ──────────────────────────────────────────────
+# ── Intent Keywords (Fallback Mode) ──────────────────────────────
 
 INTENT_KEYWORDS = {
     "greeting": ["hello", "hi", "hey", "good morning", "good evening", "greetings", "yo", "sup", "howdy", "morning", "afternoon", "evening"],
     "farewell": ["bye", "goodbye", "see you", "later", "cya", "take care", "have a good", "night", "exit", "stop", "quit"],
     "complaint": ["bad", "terrible", "awful", "horrible", "worst", "broken", "not working", "issue", "problem",
                   "frustrated", "unhappy", "dissatisfied", "annoying", "hate", "disappointed", "error", "bug", "crash",
-                  "fail", "useless", "slow", "lag", "stupid", "wrong", "fix this"],
+                  "fail", "useless", "slow", "lag", "stupid", "wrong", "fix this", "report", "reporting", "scam", "threat"],
     "request": ["please", "can you", "could you", "would you", "i need", "i want", "help me", "do this",
                 "make", "create", "generate", "write", "build", "show me", "tell me", "give me",
                 "design", "plan", "fix", "implement", "add", "update", "change", "refactor", "code", "draft"],
     "thanks": ["thanks", "thank you", "appreciate", "grateful", "thx", "awesome", "perfect", "good job", "nice work"],
-    "feedback": ["feedback", "opinion", "suggestion", "think about", "what do you", "how about", "recommend", "advice", "thoughts"],
+    "feedback": ["feedback", "opinion", "suggestion", "think about", "what do you", "how about", "recommend", "advice", "thoughts", "disagree", "not true"],
     "query": ["what", "how", "why", "when", "where", "who", "which", "?", "explain", "meaning", "define",
               "difference", "purpose", "reason", "tell about", "info", "information", "details", "describe"],
 }
@@ -77,7 +78,7 @@ SENTIMENT_POSITIVE = ["good", "great", "awesome", "amazing", "excellent", "fanta
                       "thanks", "thank you", "appreciate", "best", "brilliant", "cool", "helpful"]
 SENTIMENT_NEGATIVE = ["bad", "terrible", "awful", "horrible", "worst", "hate", "ugly", "sad",
                       "angry", "frustrated", "disappointed", "annoying", "broken", "stupid", "wrong",
-                      "poor", "useless", "sucks", "disgusting", "useless", "nonsense"]
+                      "poor", "useless", "sucks", "disgusting", "useless", "nonsense", "report", "report u", "threat", "disagree"]
 
 
 def _word_match(keyword: str, text: str) -> bool:
