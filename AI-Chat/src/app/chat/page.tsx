@@ -34,12 +34,19 @@ function ChatContent() {
 
   if (messages.length === 0 && isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-neutral-400 text-[14px]">
-          <div className="w-1.5 h-1.5 rounded-full bg-neutral-300 animate-pulse" />
-          <div className="w-1.5 h-1.5 rounded-full bg-neutral-300 animate-pulse" style={{ animationDelay: "150ms" }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-neutral-300 animate-pulse" style={{ animationDelay: "300ms" }} />
-        </div>
+      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 rounded-full border-2 border-neutral-200 border-t-[#E07B39]"
+        />
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-neutral-500 text-[14px] font-medium tracking-tight"
+        >
+          Loading conversation...
+        </motion.p>
       </div>
     );
   }

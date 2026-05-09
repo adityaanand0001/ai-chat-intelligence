@@ -25,19 +25,21 @@ interface MessageListProps {
 
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-2 py-3 h-8">
-      <motion.div
-        className="w-2.5 h-2.5 rounded-full bg-[#E07B39]"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.span
-        className="text-[12px] font-medium text-[#E07B39]"
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        Thinking
-      </motion.span>
+    <div className="flex items-center gap-1.5 py-4">
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-[#E07B39]"
+          animate={{ y: [0, -4, 0] }}
+          transition={{
+            duration: 0.6,
+            repeat: Infinity,
+            delay: i * 0.1,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+      <span className="text-[13px] font-medium text-[#E07B39] ml-2 tracking-tight">Thinking...</span>
     </div>
   );
 }
