@@ -35,11 +35,11 @@ async def extract_with_gemini(text: str, api_key: str | None = None) -> tuple[st
         resp = await model.generate_content_async(EXTRACTION_PROMPT.format(text=text))
         raw = resp.text.strip()
         
-        # Clean up common Gemini output quirks (like markdown code blocks)
-        if "```" in raw:
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if match:
-                raw = match.group(0)
+        # Robust JSON extraction: find the first { and last }
+        start_idx = raw.find('{')
+        end_idx = raw.rfind('}')
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            raw = raw[start_idx:end_idx+1]
         
         data = json.loads(raw)
         intent = data.get("intent", "unknown").lower()
